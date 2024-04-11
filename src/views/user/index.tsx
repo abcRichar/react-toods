@@ -1,6 +1,19 @@
 import { Fragment, useState } from "react";
 import "./index.css";
 
+function getCurrentTimeFormatted() {
+  const now = new Date();
+
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0"); // 月份是从 0 开始的，所以需要加 1
+  const day = String(now.getDate()).padStart(2, "0");
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const second = String(now.getSeconds()).padStart(2, "0");
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${second}`;
+}
+
 function Ipt({ onChange, list }: { onChange: any; list: any[] }) {
   const [value, setValue] = useState("");
   function add(e: any) {
@@ -8,7 +21,12 @@ function Ipt({ onChange, list }: { onChange: any; list: any[] }) {
     if (e.keyCode !== 13) return;
     if (e.target.value === "") return;
     let ids = (Math.random() * 10000).toFixed(0);
-    onChange((list = [...list, { id: ids, name: value, checked: 0 }]));
+    onChange(
+      (list = [
+        ...list,
+        { id: ids, name: value, checked: 0, time: getCurrentTimeFormatted() },
+      ])
+    );
     setValue("");
   }
 
@@ -37,25 +55,33 @@ function ListCategory({
   onChangeState: any;
   lists: any[];
 }) {
-  type Item = { id: string; name: string; checked: number };
+  type Item = { id: string; name: string; checked: number; time: string };
   function CardName({ item }: { item: Item }) {
     return (
       <div
         style={{
-          border: "1px solid #000",
-          borderRadius: "5px",
           margin: "5px",
+          flex: 1,
           textDecoration: item.checked == 1 ? "line-through" : "none",
         }}
       >
-        {item.name} + {item.id}
+        {item.name}
+        <div style={{ fontSize: "14divx" }}>创建时间：{item.time}</div>
       </div>
     );
   }
   const ItemList = lists.map((item: any) => {
     return (
       <Fragment key={item.id}>
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            border: "2px solid #101010",
+            borderRadius: "5px",
+            marginBottom: "10px",
+          }}
+        >
           <div>
             <input
               type="checkbox"
